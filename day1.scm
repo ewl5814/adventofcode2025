@@ -19,7 +19,7 @@
     (if (<= (move-curr curr line) 0) 
       (truncate (/ (+ (- 100 curr) (get-num line)) 100)) 0)))
 
-; recurse through every line of code and add the amount of 0 crossings
+; recurse through every line of input and add the amount of 0 crossings
 (define (decode in curr)
   (let ((line (read-line in)))
    (if (eof-object? line) 0 (+ (get-addend curr line) 
