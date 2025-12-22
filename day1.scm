@@ -1,40 +1,22 @@
 (import (chicken io))
+(import scheme)
 
-;(define filename "input.txt")
-;(define in (open-input-file filename)) 
-(define (print-lines in)
-  (let* ((line (read-line in)))
-    (if (eof-object? line) 
-     (close-input-port in)
-     (begin
-      (display line)
-      (newline)
-      (print-lines in)
-     )
-    )
+(define (test file) (open-input-file file))
+
+(define (move_curr curr line) 
+  (if (equal? (substring line 0 1) "L")
+   (modulo (- curr (string->number (substring line 1 (string-length line)))) 100)
+   (modulo (+ curr (string->number (substring line 1 (string-length line)))) 100)
   )
 )
 
-
-(define (read-from-file file) 
- (begin
-  (print-lines (open-input-file file))
- )
-)
-
-
-
-
-(define (decode (in curr)
-  (let* ((line (read-line in)))
-    (if (eof-object? line)
-      (close-input-port in)
-      (begin
-	(
-
-
-(define (decode-file file)
-  (begin
-    (decode (open-input-file file))
+(define (decode in curr)
+  (let ((line (read-line in)))
+   (if (eof-object? line)
+    (begin (close-input-port in) 0)
+    (+ (if (= 0 curr) 1 0) (decode in (move_curr curr line)))
+   )
   )
 )
+
+(define (decode-file file) (display (decode (open-input-file file) 50)))
