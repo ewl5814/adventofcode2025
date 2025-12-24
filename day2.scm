@@ -11,7 +11,7 @@
 
 (define (string-find-next-char str char)
   (if (= (string-length str) 0)
-   (string-length str) 
+   0 
    (if (char=? (string-ref str 0) char) 0 
     (+ 1 (string-find-next-char (string-tail str 1) char))))) 
 
@@ -19,10 +19,10 @@
   (if (= 0 num) 0 (+ 1 (count-digits (truncate (/ num 10))))))
 
 (define (check-num num)
-  (if (=
-	(truncate (/ num (expt 10 (/ (count-digits num) 2))))
-	(modulo num (expt 10 (truncate (/ (count-digits num) 2)))))
-  num 0))
+  (if (and (= (modulo (count-digits num) 2) 0)
+	(= (truncate (/ num (expt 10 (/ (count-digits num) 2))))
+	(modulo num (expt 10 (truncate (/ (count-digits num) 2))))))
+  (begin (display num)(newline) num) 0))
 
 (define (search-range first second)
  (if (= first second)
@@ -39,6 +39,10 @@
 	(tail (string-tail line (+ 1 (string-find-next-char line #\-))))
 	(second (string-head tail (string-find-next-char tail #\,)))) 
 	(begin
+	  ;(display first)
+	  ;(display " ")
+	  ;(display second)
+	  ;(newline)
 	  (+  
 	  (search-range (string->number first) (string->number second))
 	  (parse-line (if (>= (string-find-next-char tail #\,) (string-length tail))
