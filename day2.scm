@@ -25,13 +25,10 @@
   num 0))
 
 (define (search-range first second)
-  (if (and (= 1 (modulo (count-digits first) 2)) (= 1 (modulo (count-digits second) 2)))
-    0
-    (if (= first second)
-      (check-num first)
-      (+ (check-num first) (search-range (+ first 1) second))
-    )
-  )
+ (if (= first second)
+   (check-num first)
+   (+ (check-num first) (search-range (+ first 1) second))
+ )
 )
 
 
