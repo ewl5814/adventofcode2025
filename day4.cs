@@ -3,6 +3,15 @@ using System.IO;
 
 public class FindRolls {
 
+    static string replace_x_at(int index, string str) {
+
+     char[] chars = str.ToCharArray();
+
+     chars[index] = 'x';
+
+     return new string(chars);
+    }
+
     static int get_rolls_in_radius(int i, int j, int i_length, int j_length, string[] lines) {
             int[,] possible_pos = {
             {i - 1, j - 1},
@@ -48,40 +57,54 @@ public class FindRolls {
                 possible_pos[7,1] = -1;
             }
 
-            int count = 0;            
+            int count = 0;
             int k;
+           
             for (k = 0; k < 8; k++) {
                 if (possible_pos[k,0] != -1 && lines[possible_pos[k,0]][possible_pos[k,1]] == '@') {
                     count++; 
                 }
             }
+
             return count;
     } 
 
     static void Main(string[] args) {
+       
         string input = File.ReadAllText (args[0]);
         string[] lines = input.Split("\n");
+
         int i;
         int j;
 
-        int tp_count = 0;
+        int total_count = 0;
 
-    
-        for (i = 0; i < lines.Length - 1; i++) {
-            int count = 0; 
-            for (j = 0; j < lines[0].Length; j++) { 
-                if (lines[i][j] == '@') {
+        while (true) {
+            int curr_count = 0;
+            for (i = 0; i < lines.Length - 1; i++) {
+                int radius_count = 0;
 
-                    count = get_rolls_in_radius(i, j, lines.Length - 2, lines[0].Length - 1, lines);
-                    
-                    if (count < 4) {
-                        tp_count++;
+                for (j = 0; j < lines[0].Length; j++) { 
+                    if (lines[i][j] == '@') {
+                        radius_count = get_rolls_in_radius(i, j, lines.Length - 2, lines[0].Length - 1, lines);
+
+                        if (radius_count < 4) {
+                            curr_count++; 
+                            lines[i] = replace_x_at(j, lines[i]); 
+                        }
                     }
                 }
             }
+ 
+            if (curr_count == 0) {
+               break; 
+            }
+            else {
+                total_count += curr_count; 
+            }
         }
 
-        Console.WriteLine("total: " + tp_count);
+        Console.WriteLine("total: " + total_count);
    }
 }
 
