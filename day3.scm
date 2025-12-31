@@ -26,16 +26,16 @@
 					(substring line ones-index (+ 1 ones-index))))))
 
 ; find a specified amount of digits in a string of numbers that create the largest number when concatenated
-(define (greatest-twelve line prev-index end)
+(define (greatest-many line prev-index end)
   (if (= end 0) ""
    (let ((digit-index (find-largest-digit line (string-tail line (+ 1 prev-index)) (+ 1 prev-index) (- end 1)))) 
       (string-append (substring line digit-index (+ 1 digit-index))
-		   (greatest-twelve line digit-index (- end 1))))))
+		   (greatest-many line digit-index (- end 1))))))
 
 ; sum the numbers formed from combining digits in multiple strings of numbers
 (define (sum-batteries in)
   (let ((line (read-line in))) 
-    (if (eof-object? line) 0 (+ (greatest-twelve line -1 12))
+    (if (eof-object? line) 0 (+ (greatest-many line -1 12))
 	(sum-batteries in)))))
 
 (define (solve-file file)

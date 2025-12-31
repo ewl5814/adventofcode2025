@@ -1,8 +1,6 @@
 (import (chicken io))
 (import scheme)
 
-(define (test num) (display (count-digits num)))
-
 (define (string-head str end)
   (substring str 0 end))
 
@@ -56,11 +54,10 @@
       (let* ((first (string-head line (string-find-next-char line #\-)))
 	(tail (string-tail line (+ 1 (string-find-next-char line #\-))))
 	(second (string-head tail (string-find-next-char tail #\,)))) 
-	(begin
 	  (+  (search-range (string->number first) (string->number second))
 	  (parse-line 
 	    (if (>= (string-find-next-char tail #\,) (string-length tail)) ""
-	        (string-tail tail (+ 1 (string-find-next-char tail #\,))))))))))
+	        (string-tail tail (+ 1 (string-find-next-char tail #\,)))))))))
 
 ; opens the file and solves it
 (define (solve file)
