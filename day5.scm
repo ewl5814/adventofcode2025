@@ -43,13 +43,7 @@
     (newline)
     (close-input-port available))))
 
-(define (find-biggest in large)
-    (let* ((range (read-line in)) (split (string-find-next-char range #\-)) (next-tail (string->number (string-tail range (+ 1 split)))))
-      (if (string=? range "")
-        large
-        (if (> next-tail large)
-          (find-biggest in next-tail)
-          (find-biggest in large)))))
+
 
 ; found this swap solution online
 (define (swap-index idx1 idx2 lst)
@@ -64,14 +58,23 @@
            (cons (car lst) (build-list (cdr lst) (add1 idx) e1 e2)))))
   (build-list lst 0 (list-ref lst idx1) (list-ref lst idx2)))
 
+(define (get-end-range ranges index)
+  (string->number (string-tail (list-ref ranges index) (+ 1 (string-find-next-char (list-ref ranges index) #\-))))) 
+
+(define (get-start-range ranges index)
+       (begin (display (cdr ranges))(newline) (string->number (string-head (list-ref ranges index) (string-find-next-char (list-ref ranges index) #\-)))))
+
 (define (look-for-swaps ranges low pivot i k)
     (if (<= i low) (cons k ranges)
-    (if (> (list-ref ranges i) pivot)
+    (if (> (get-start-range ranges i) pivot)
       (look-for-swaps (swap-index i k ranges) low pivot (- i 1) (- k 1))
       (look-for-swaps ranges low pivot (- i 1) k))))
 
 (define (partition ranges low high)
-  (let* ((ranges-and-k (look-for-swaps ranges low (list-ref ranges low) high high)) (k (car ranges-and-k)) (swapped-ranges (cdr ranges-and-k)))
+  (let* ((ranges-and-k 
+           (look-for-swaps ranges low (get-start-range ranges low) high high)) 
+           (k (car ranges-and-k)) 
+           (swapped-ranges (cdr ranges-and-k)))
     (cons k (swap-index low k swapped-ranges)))) 
 
 (define (quick-sort ranges low high)
@@ -79,6 +82,20 @@
     (let* ((swapped-and-pi (partition ranges low high)) (pi (car swapped-and-pi)) (swapped (cdr swapped-and-pi)))
      (quick-sort (quick-sort swapped low (- pi 1)) (+ pi 1) high))))
 
+(define (lines-to-list in) 
+  (let ((line (read-line in)))
+    (if (string=? line "") '()
+      (cons line (lines-to-list in)))))
+
+(define (count-ranges sorted-ranges end)
+  (if (= (length sorted-ranges) 0) 0
+    (let ((next-start (get-start-range sorted-ranges 0)) (next-end (get-end-range sorted-ranges 0))) 
+      (if (> next-start end)
+        (+ (+ 1 (- next-end next-start)) (count-ranges (cdr sorted-ranges) next-end))
+        (if (> next-end end)
+          (+ (- next-end end) (count-ranges (cdr sorted-ranges) next-end))
+          (count-ranges (cdr sorted-ranges) end))))))
+
 (define (find-fresh file)
-  (let ((biggest (find-biggest (open-input-file file) 0)))
-    (display (count-fresh 100000000000000 file biggest))))
+  (let* ((range-list (lines-to-list (open-input-file file))) (sorted-list (quick-sort range-list 0 (- (length range-list) 1))))
+    (display (+ (+ 1 (- (get-end-range sorted-list 0) (get-start-range sorted-list 0))) (count-ranges sorted-list (get-end-range sorted-list 0))))))
